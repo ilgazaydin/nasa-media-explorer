@@ -6,12 +6,14 @@
  * Features:
  * - Responsive site title (hidden on xs screens)
  * - Navigation icons for Search and Favourites, highlighted when active
- * - Simple mock authentication with login/logout toggle
- * - Displays a welcome message when a user is logged in
+ * - Logout button shown only when user is authenticated
+ * - Welcome message displaying the user's name when logged in
  *
  * Hooks:
- * - `useLocation()` to determine current route and apply active icon styles
- * - `useAuthContext()` to manage and display auth state
+ * - `useLocation()` to determine the current route and highlight active icons
+ * - `useAppSelector()` to access authentication state from Redux
+ * - `useAppDispatch()` to dispatch logout action
+ * - `useNavigate()` to redirect after logout
  */
 
 import {
@@ -24,17 +26,23 @@ import {
   Button,
   Divider,
 } from "@mui/material";
-import { Link as RouterLink, useLocation } from "react-router-dom";
-import { useAuthContext } from "@/context/AuthContext";
+import { Link as RouterLink, useLocation, useNavigate } from "react-router-dom";
+import { useAppSelector, useAppDispatch } from "@/app/hooks";
+import { logout } from "@/features/auth/store/authSlice";
 import SearchIcon from "@mui/icons-material/Search";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 
 const AppHeader = () => {
   const location = useLocation();
-  const { user, login, logout } = useAuthContext();
-  const handleAuthClick = () => {
-    if (user) logout();
-    else login();
+  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+
+  const { token, user } = useAppSelector((state) => state.auth);
+  const isAuthenticated = !!token && !!user;
+
+  const handleLogout = () => {
+    dispatch(logout());
+    navigate("/login");
   };
 
   return (
@@ -70,36 +78,42 @@ const AppHeader = () => {
                 color="text.secondary"
                 sx={{ fontWeight: 500 }}
               >
-                Welcome {user.name}
+                Welcome {user.firstName} {user.lastName}
               </Typography>
             </>
           )}
         </Box>
 
         <Stack direction="row" spacing={1} alignItems="center">
-          <IconButton
-            component={RouterLink}
-            to="/"
-            color={location.pathname === "/" ? "primary" : "default"}
-          >
-            <SearchIcon />
-          </IconButton>
+          {isAuthenticated && (
+            <>
+              <IconButton
+                component={RouterLink}
+                to="/"
+                color={location.pathname === "/" ? "primary" : "default"}
+              >
+                <SearchIcon />
+              </IconButton>
 
-          <IconButton
-            component={RouterLink}
-            to="/favourites"
-            color={location.pathname === "/favourites" ? "primary" : "default"}
-          >
-            <FavoriteBorderIcon />
-          </IconButton>
+              <IconButton
+                component={RouterLink}
+                to="/favourites"
+                color={
+                  location.pathname === "/favourites" ? "primary" : "default"
+                }
+              >
+                <FavoriteBorderIcon />
+              </IconButton>
 
-          <Button
-            onClick={handleAuthClick}
-            color="inherit"
-            sx={{ textTransform: "none", fontWeight: 500 }}
-          >
-            {user ? "Logout" : "Login"}
-          </Button>
+              <Button
+                onClick={handleLogout}
+                color="inherit"
+                sx={{ textTransform: "none", fontWeight: 500 }}
+              >
+                Logout
+              </Button>
+            </>
+          )}
         </Stack>
       </Toolbar>
     </AppBar>

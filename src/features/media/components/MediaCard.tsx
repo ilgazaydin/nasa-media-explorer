@@ -41,7 +41,6 @@ interface Props {
 
 const MediaCard = memo(
   ({ item, toggleFavourite, isFavourited }: Props) => {
-    console.log("MediaCard rendered");
     const navigate = useNavigate();
     const [imageLoaded, setImageLoaded] = useState(false);
 
@@ -85,18 +84,18 @@ const MediaCard = memo(
         }}
       >
         {!imageLoaded && (
-        <Box
-          sx={{
-            position: "absolute",
-            inset: 0,
-            zIndex: 2,
-            borderRadius: 2,
-            overflow: "hidden",
-          }}
-        >
-          <SkeletonCard />
-        </Box>
-      )}
+          <Box
+            sx={{
+              position: "absolute",
+              inset: 0,
+              zIndex: 2,
+              borderRadius: 2,
+              overflow: "hidden",
+            }}
+          >
+            <SkeletonCard />
+          </Box>
+        )}
         <CardMedia
           component="img"
           image={item.thumbnailUrl}

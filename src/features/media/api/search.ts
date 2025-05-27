@@ -4,7 +4,7 @@
  * from NASA's Image and Video Library API.
  */
 
-import { http } from "@/lib/http";
+import { nasaApi } from "@/lib/api/nasa";
 import { APIMediaList } from "../model/api";
 
 export interface SearchMediaParams {
@@ -26,7 +26,7 @@ export interface SearchMediaParams {
  */
 export const fetchMediaSearch = async (
   params: SearchMediaParams
-): Promise<APIMediaList> => http.get("/search", { params });
+): Promise<APIMediaList> => nasaApi.get("/search", { params });
 
 /**
  * Fetches a single media item by its NASA ID.
@@ -39,4 +39,4 @@ export const fetchMediaSearch = async (
  */
 
 export const fetchMediaItemById = async (id: string): Promise<APIMediaList> =>
-  http.get("/search", { params: { nasa_id: id } });
+  nasaApi.get("/search", { params: { nasa_id: id } });

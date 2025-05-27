@@ -11,9 +11,9 @@
  * console.log(assets); // [{ href: "https://..." }, ...]
  */
 
-import { http } from "@/lib/http";
+import { nasaApi } from "@/lib/api/nasa";
 import { APIMediaAsset } from "../model/api";
 
 export const fetchMediaAssets = async (
   nasaId: string
-): Promise<APIMediaAsset> => http.get(`/asset/${nasaId}`);
+): Promise<APIMediaAsset> => nasaApi.get(`/asset/${nasaId}`);

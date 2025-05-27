@@ -4,7 +4,7 @@
  * Includes endpoints for both metadata location and actual metadata content.
  */
 
-import { http } from "@/lib/http";
+import { nasaApi } from "@/lib/api/nasa";
 import { APIMediaMetadataLocation, APIMediaMetadata } from "../model/api";
 
 /**
@@ -19,7 +19,7 @@ import { APIMediaMetadataLocation, APIMediaMetadata } from "../model/api";
 export const fetchMetadataLocation = async (
   nasaId: string
 ): Promise<APIMediaMetadataLocation> =>
-  http.get<APIMediaMetadataLocation>(`/metadata/${nasaId}`);
+  nasaApi.get<APIMediaMetadataLocation>(`/metadata/${nasaId}`);
 
 /**
  * Fetches the raw metadata JSON from the given URL.
@@ -31,4 +31,4 @@ export const fetchMetadataLocation = async (
  * const metadata = await fetchMetadata("https://images-assets.nasa.gov/.../metadata.json");
  */
 export const fetchMetadata = async (url: string): Promise<APIMediaMetadata> =>
-  http.get(url);
+  nasaApi.get(url);

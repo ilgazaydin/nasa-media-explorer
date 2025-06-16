@@ -37,8 +37,8 @@ const AppHeader = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
-  const { token, user } = useAppSelector((state) => state.auth);
-  const isAuthenticated = !!token && !!user;
+  const { accessToken, user } = useAppSelector((state) => state.auth);
+  const isAuthenticated = !!accessToken && !!user;
 
   const handleLogout = () => {
     dispatch(logout());

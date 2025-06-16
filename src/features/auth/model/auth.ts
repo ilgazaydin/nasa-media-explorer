@@ -4,9 +4,9 @@
  *
  * Interfaces:
  * - `LoginPayload`: Credentials for logging in.
- * - `LoginResponse`: Response containing a JWT token after successful login.
+ * - `LoginResponse`: Response containing both access and refresh tokens after successful login.
  * - `RegisterPayload`: Data required for registering a new user.
- * - `RegisterResponse`: Response containing a JWT token after successful registration.
+ * - `RegisterResponse`: Response containing both access and refresh tokens after successful registration.
  * - `MeResponse`: Authenticated user's profile information returned from the `/auth/me` endpoint.
  */
 
@@ -16,7 +16,8 @@ export interface LoginPayload {
 }
 
 export interface LoginResponse {
-  token: string;
+  accessToken: string;
+  refreshToken: string;
 }
 
 export interface RegisterPayload {
@@ -27,7 +28,8 @@ export interface RegisterPayload {
 }
 
 export interface RegisterResponse {
-  token: string;
+  accessToken: string;
+  refreshToken: string;
 }
 
 export interface MeResponse {

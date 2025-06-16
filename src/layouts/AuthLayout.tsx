@@ -25,16 +25,16 @@ import { Box, CircularProgress } from "@mui/material";
 
 const AuthLayout = () => {
   const dispatch = useAppDispatch();
-  const { token, user, loading } = useAppSelector((state) => state.auth);
+  const { accessToken, user, loading } = useAppSelector((state) => state.auth);
 
   useEffect(() => {
-    if (token && !user) {
+    if (accessToken && !user) {
       dispatch(fetchMe());
     }
-  }, [token, user, dispatch]);
+  }, [accessToken, user, dispatch]);
 
-  if (!token) return <Navigate to="/login" replace />;
-  if (loading || (token && !user)) {
+  if (!accessToken) return <Navigate to="/login" replace />;
+  if (loading || (accessToken && !user)) {
     return (
       <Box
         display="flex"

@@ -13,7 +13,7 @@
  * Async Thunks:
  * - `login`: Authenticates a user and stores the access token
  * - `register`: Registers a new user and stores the access token
- * - `fetchMe`: Retrieves the current authenticated user's 
+ * - `fetchMe`: Retrieves the current authenticated user's
  * - `verifyEmail`: Verifies a user's email address using a token
  *
  * Reducers:
@@ -38,13 +38,15 @@ export interface User {
 }
 
 interface AuthState {
-  token: string | null;
+  accessToken: string | null;
+  refreshToken: string | null;
   user: User | null;
   loading: boolean;
 }
 
 const initialState: AuthState = {
-  token: localStorage.getItem("access_token"),
+  accessToken: localStorage.getItem("access_token"),
+  refreshToken: localStorage.getItem("refresh_token"),
   user: null,
   loading: true,
 };
@@ -52,14 +54,15 @@ const initialState: AuthState = {
 // 🔐 Thunks
 
 export const login = createAsyncThunk<
-  string,
+  { accessToken: string; refreshToken: string },
   { email: string; password: string },
   { rejectValue: string }
 >("auth/login", async ({ email, password }, { rejectWithValue }) => {
   try {
     const res = await loginApi({ email, password });
-    localStorage.setItem("access_token", res.token);
-    return res.token;
+    localStorage.setItem("access_token", res.accessToken);
+    localStorage.setItem("refresh_token", res.refreshToken);
+    return res;
   } catch (err: any) {
     const message =
       err.response?.data?.message ||
@@ -69,7 +72,7 @@ export const login = createAsyncThunk<
 });
 
 export const register = createAsyncThunk<
-  string,
+  { accessToken: string; refreshToken: string },
   { email: string; password: string; firstName: string; lastName: string },
   { rejectValue: string }
 >(
@@ -77,8 +80,9 @@ export const register = createAsyncThunk<
   async ({ email, password, firstName, lastName }, { rejectWithValue }) => {
     try {
       const res = await registerApi({ email, password, firstName, lastName });
-      localStorage.setItem("access_token", res.token);
-      return res.token;
+      localStorage.setItem("access_token", res.accessToken);
+      localStorage.setItem("refresh_token", res.refreshToken);
+      return res;
     } catch (err: any) {
       const message =
         err.response?.data?.message || "Registration failed. Please try again.";
@@ -118,25 +122,31 @@ const authSlice = createSlice({
      * It is useful when the user explicitly logs out of the application.
      */
     logout: (state) => {
-      state.token = null;
+      state.accessToken = null;
+      state.refreshToken = null;
       state.user = null;
       localStorage.removeItem("access_token");
+      localStorage.removeItem("refresh_token");
     },
   },
   extraReducers: (builder) => {
     builder
       .addCase(login.fulfilled, (state, action) => {
-        state.token = action.payload;
+        state.accessToken = action.payload.accessToken;
+        state.refreshToken = action.payload.refreshToken;
       })
       .addCase(register.fulfilled, (state, action) => {
-        state.token = action.payload;
+        state.accessToken = action.payload.accessToken;
+        state.refreshToken = action.payload.refreshToken;
       })
       .addCase(fetchMe.fulfilled, (state, action) => {
         state.user = action.payload;
         state.loading = false;
       })
       .addCase(fetchMe.rejected, (state) => {
-        state.token = null;
+        debugger;
+        state.accessToken = null;
+        state.refreshToken = null;
         state.user = null;
         state.loading = false;
       });

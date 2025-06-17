@@ -16,8 +16,8 @@ import { Outlet, Navigate } from "react-router-dom";
 import { useAppSelector } from "@/app/hooks";
 
 const PublicLayout = () => {
-  const { token, user } = useAppSelector((state) => state.auth);
-  const isAuthenticated = !!token && !!user;
+  const { accessToken, user } = useAppSelector((state) => state.auth);
+  const isAuthenticated = !!accessToken && !!user;
 
   if (isAuthenticated) {
     return <Navigate to="/" replace />;

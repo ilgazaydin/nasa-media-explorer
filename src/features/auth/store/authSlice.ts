@@ -144,7 +144,6 @@ const authSlice = createSlice({
         state.loading = false;
       })
       .addCase(fetchMe.rejected, (state) => {
-        debugger;
         state.accessToken = null;
         state.refreshToken = null;
         state.user = null;

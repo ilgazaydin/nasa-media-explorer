@@ -1,19 +1,19 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { screen, fireEvent, waitFor } from "@testing-library/react";
 import LoginPage from "../LoginPage";
-import { Provider } from "react-redux";
-import { MemoryRouter, useNavigate } from "react-router-dom";
-import { configureStore } from "@reduxjs/toolkit";
-import authReducer from "@/features/auth/store/authSlice";
+import { useNavigate } from "react-router-dom";
 import * as hooks from "@/app/hooks";
 import { vi } from "vitest";
 import { login } from "@/features/auth/store/authSlice";
+import { renderWithProviders } from "@/test/utils";
+import { mockUnauthenticatedState } from "@/test/store";
+import { createMockNavigate } from "@/test/mocks";
 
 // --- Mocks ---
 vi.mock("react-router-dom", async () => {
   const actual = await vi.importActual("react-router-dom");
   return {
     ...actual,
-    useNavigate: vi.fn(() => vi.fn()),
+    useNavigate: vi.fn(() => createMockNavigate()),
   };
 });
 
@@ -23,20 +23,6 @@ vi.mock("@/app/hooks", () => ({
 
 const mockedNavigate = vi.mocked(useNavigate);
 const mockedUseAppDispatch = vi.mocked(hooks.useAppDispatch);
-
-// --- Test Wrapper ---
-const renderWithProviders = (ui: React.ReactElement) => {
-  const store = configureStore({
-    reducer: { auth: authReducer },
-  });
-
-  return render(
-    <Provider store={store}>
-      <MemoryRouter>{ui}</MemoryRouter>
-    </Provider>
-  );
-};
-
 // --- Tests ---
 describe("LoginPage", () => {
   beforeEach(() => {
@@ -46,14 +32,18 @@ describe("LoginPage", () => {
   });
 
   it("renders form fields", () => {
-    renderWithProviders(<LoginPage />);
+    renderWithProviders(<LoginPage />, {
+      preloadedState: mockUnauthenticatedState
+    });
     expect(screen.getByLabelText(/email/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/password/i)).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /login/i })).toBeInTheDocument();
   });
 
   it("shows validation errors on empty submit", async () => {
-    renderWithProviders(<LoginPage />);
+    renderWithProviders(<LoginPage />, {
+      preloadedState: mockUnauthenticatedState
+    });
     fireEvent.click(screen.getByRole("button", { name: /login/i }));
 
     await waitFor(
@@ -79,7 +69,9 @@ describe("LoginPage", () => {
     });
     mockedUseAppDispatch.mockReturnValue(mockDispatch);
 
-    renderWithProviders(<LoginPage />);
+    renderWithProviders(<LoginPage />, {
+      preloadedState: mockUnauthenticatedState
+    });
 
     fireEvent.change(screen.getByLabelText(/email/i), {
       target: { value: "test@example.com" },
@@ -108,7 +100,9 @@ describe("LoginPage", () => {
     });
     mockedUseAppDispatch.mockReturnValue(mockDispatch);
 
-    renderWithProviders(<LoginPage />);
+    renderWithProviders(<LoginPage />, {
+      preloadedState: mockUnauthenticatedState
+    });
 
     fireEvent.change(screen.getByLabelText(/email/i), {
       target: { value: "fail@test.com" },

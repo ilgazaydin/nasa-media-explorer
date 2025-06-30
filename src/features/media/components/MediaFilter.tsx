@@ -66,6 +66,8 @@ const MediaFilter = memo(
     const handleToggle = useCallback(
       (type: string) => {
         const exists = selectedTypes.includes(type);
+        const isOnlyOne = selectedTypes.length === 1 && exists;
+        if (isOnlyOne) return;
         const newTypes = exists
           ? selectedTypes.filter((t) => t !== type)
           : [...selectedTypes, type];
@@ -83,7 +85,7 @@ const MediaFilter = memo(
 
     return (
       <>
-        <IconButton onClick={handleOpen}>
+        <IconButton onClick={handleOpen} data-testid="filter-button">
           <FilterAltIcon />
         </IconButton>
 

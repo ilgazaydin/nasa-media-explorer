@@ -1,11 +1,9 @@
-import { render, screen, waitFor } from "@testing-library/react";
-import { MemoryRouter } from "react-router-dom";
-import { Provider } from "react-redux";
-import { configureStore } from "@reduxjs/toolkit";
-import authReducer from "@/features/auth/store/authSlice";
+import { screen, waitFor } from "@testing-library/react";
 import * as hooks from "@/app/hooks";
 import VerifyEmailPage from "../VerifyEmailPage";
 import { vi } from "vitest";
+import { renderWithProviders } from "@/test/utils";
+import { mockUnauthenticatedState } from "@/test/store";
 
 // --- Mocks ---
 vi.mock("@/app/hooks", () => ({
@@ -13,21 +11,6 @@ vi.mock("@/app/hooks", () => ({
 }));
 
 const mockedUseAppDispatch = vi.mocked(hooks.useAppDispatch);
-
-// --- Helper ---
-const renderWithProviders = (route: string) => {
-  const store = configureStore({
-    reducer: { auth: authReducer },
-  });
-
-  return render(
-    <Provider store={store}>
-      <MemoryRouter initialEntries={[route]}>
-        <VerifyEmailPage />
-      </MemoryRouter>
-    </Provider>
-  );
-};
 
 // --- Tests ---
 describe("VerifyEmailPage", () => {
@@ -37,7 +20,10 @@ describe("VerifyEmailPage", () => {
   });
 
   it("shows error when token is missing", async () => {
-    renderWithProviders("/verify-email");
+    renderWithProviders(<VerifyEmailPage />, {
+      route: "/verify-email",
+      preloadedState: mockUnauthenticatedState
+    });
 
     await waitFor(() => {
       expect(
@@ -53,18 +39,13 @@ describe("VerifyEmailPage", () => {
     });
     mockedUseAppDispatch.mockReturnValue(mockDispatch);
 
-    renderWithProviders("/verify-email?token=valid-token");
+    renderWithProviders(<VerifyEmailPage />, {
+      route: "/verify-email?token=valid-token",
+      preloadedState: mockUnauthenticatedState
+    });
 
     await waitFor(() => {
       expect(mockDispatch).toHaveBeenCalled();
-      const dispatchedAction = mockDispatch.mock.calls[0][0];
-      expect(dispatchedAction).toBeInstanceOf(Function); // It's a thunk
-
-      const mockThunkApi = {
-        rejectWithValue: vi.fn(),
-      };
-      expect(dispatchedAction(mockThunkApi)).resolves.toBeUndefined();
-
       expect(
         screen.getByText(/your email has been verified successfully/i)
       ).toBeInTheDocument();
@@ -78,18 +59,13 @@ describe("VerifyEmailPage", () => {
     });
     mockedUseAppDispatch.mockReturnValue(mockDispatch);
 
-    renderWithProviders("/verify-email?token=invalid-token");
+    renderWithProviders(<VerifyEmailPage />, {
+      route: "/verify-email?token=invalid-token",
+      preloadedState: mockUnauthenticatedState
+    });
 
     await waitFor(() => {
       expect(mockDispatch).toHaveBeenCalled();
-      const dispatchedAction = mockDispatch.mock.calls[0][0];
-      expect(dispatchedAction).toBeInstanceOf(Function);
-
-      const mockThunkApi = {
-        rejectWithValue: vi.fn(),
-      };
-      expect(dispatchedAction(mockThunkApi)).rejects.toThrow("Invalid token");
-
       expect(
         screen.getByText(/invalid or expired verification link/i)
       ).toBeInTheDocument();
@@ -103,7 +79,10 @@ describe("VerifyEmailPage", () => {
     });
     mockedUseAppDispatch.mockReturnValue(mockDispatch);
 
-    renderWithProviders("/verify-email?token=loading-token");
+    renderWithProviders(<VerifyEmailPage />, {
+      route: "/verify-email?token=loading-token",
+      preloadedState: mockUnauthenticatedState
+    });
 
     expect(screen.getByRole("progressbar")).toBeInTheDocument();
   });

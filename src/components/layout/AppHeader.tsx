@@ -88,6 +88,7 @@ const AppHeader = () => {
           {isAuthenticated && (
             <>
               <IconButton
+                aria-label="search"
                 component={RouterLink}
                 to="/"
                 color={location.pathname === "/" ? "primary" : "default"}
@@ -96,6 +97,7 @@ const AppHeader = () => {
               </IconButton>
 
               <IconButton
+                aria-label="favourites"
                 component={RouterLink}
                 to="/favourites"
                 color={
@@ -106,6 +108,7 @@ const AppHeader = () => {
               </IconButton>
 
               <Button
+                aria-label="logout"
                 onClick={handleLogout}
                 color="inherit"
                 sx={{ textTransform: "none", fontWeight: 500 }}

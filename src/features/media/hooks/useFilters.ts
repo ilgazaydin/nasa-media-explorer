@@ -36,9 +36,17 @@ export const useFilters = () => {
   const [searchParams, setSearchParams] = useSearchParams();
 
   // Load initial state from URL
-  const initialTypes = searchParams.get("type")
-    ? searchParams.get("type")!.split(",").filter(Boolean)
-    : MEDIA_TYPES;
+  const initialTypes = (() => {
+    const typeParam = searchParams.get("type");
+    if (!typeParam) return MEDIA_TYPES;
+
+    const typesFromUrl = typeParam.split(",");
+    const validTypes = typesFromUrl.filter((type) =>
+      MEDIA_TYPES.includes(type as any)
+    );
+
+    return validTypes.length > 0 ? validTypes : MEDIA_TYPES;
+  })();
 
   const initialYearStart = Number(searchParams.get("start")) || MIN_YEAR;
   const initialYearEnd = Number(searchParams.get("end")) || CURRENT_YEAR;

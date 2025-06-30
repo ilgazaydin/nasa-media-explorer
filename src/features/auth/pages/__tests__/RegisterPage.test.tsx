@@ -1,19 +1,19 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { screen, fireEvent, waitFor } from "@testing-library/react";
 import RegisterPage from "../RegisterPage";
-import { Provider } from "react-redux";
-import { MemoryRouter, useNavigate } from "react-router-dom";
-import { configureStore } from "@reduxjs/toolkit";
-import authReducer from "@/features/auth/store/authSlice";
+import { useNavigate } from "react-router-dom";
 import * as hooks from "@/app/hooks";
 import { vi } from "vitest";
 import { register } from "@/features/auth/store/authSlice";
+import { renderWithProviders } from "@/test/utils";
+import { mockUnauthenticatedState } from "@/test/store";
+import { createMockNavigate } from "@/test/mocks";
 
 // --- Mocks ---
 vi.mock("react-router-dom", async () => {
   const actual = await vi.importActual("react-router-dom");
   return {
     ...actual,
-    useNavigate: vi.fn(() => vi.fn()),
+    useNavigate: vi.fn(() => createMockNavigate()),
   };
 });
 
@@ -24,19 +24,6 @@ vi.mock("@/app/hooks", () => ({
 const mockedNavigate = vi.mocked(useNavigate);
 const mockedUseAppDispatch = vi.mocked(hooks.useAppDispatch);
 
-// --- Test Wrapper ---
-const renderWithProviders = (ui: React.ReactElement) => {
-  const store = configureStore({
-    reducer: { auth: authReducer },
-  });
-
-  return render(
-    <Provider store={store}>
-      <MemoryRouter>{ui}</MemoryRouter>
-    </Provider>
-  );
-};
-
 // --- Tests ---
 describe("RegisterPage", () => {
   beforeEach(() => {
@@ -46,7 +33,9 @@ describe("RegisterPage", () => {
   });
 
   it("renders all form fields", () => {
-    renderWithProviders(<RegisterPage />);
+    renderWithProviders(<RegisterPage />, {
+      preloadedState: mockUnauthenticatedState
+    });
     expect(screen.getByLabelText(/first name/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/last name/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/email/i)).toBeInTheDocument();
@@ -54,7 +43,9 @@ describe("RegisterPage", () => {
   });
 
   it("shows validation errors on empty submit", async () => {
-    renderWithProviders(<RegisterPage />);
+    renderWithProviders(<RegisterPage />, {
+      preloadedState: mockUnauthenticatedState
+    });
     fireEvent.click(screen.getByRole("button", { name: /sign up/i }));
 
     await waitFor(
@@ -89,7 +80,9 @@ describe("RegisterPage", () => {
     const mockNavigate = vi.fn();
     mockedNavigate.mockReturnValue(mockNavigate);
 
-    renderWithProviders(<RegisterPage />);
+    renderWithProviders(<RegisterPage />, {
+      preloadedState: mockUnauthenticatedState
+    });
 
     fireEvent.change(screen.getByLabelText(/first name/i), {
       target: { value: formData.firstName },
@@ -139,7 +132,9 @@ describe("RegisterPage", () => {
     });
     mockedUseAppDispatch.mockReturnValue(mockDispatch);
 
-    renderWithProviders(<RegisterPage />);
+    renderWithProviders(<RegisterPage />, {
+      preloadedState: mockUnauthenticatedState
+    });
 
     fireEvent.change(screen.getByLabelText(/first name/i), {
       target: { value: formData.firstName },

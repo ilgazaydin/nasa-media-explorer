@@ -25,6 +25,7 @@ const SkeletonCard = () => (
       overflow: "hidden",
       position: "relative",
     }}
+    data-testid="skeleton-card"
   >
     {/* <Skeleton variant="rectangular" height={200} /> */}
     <Box sx={{ p: 2 }}>

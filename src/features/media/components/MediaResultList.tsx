@@ -1,20 +1,20 @@
 /**
- * @file MediaFilter.tsx
- * @description UI component for filtering NASA media by type (image, video, audio) and published year range.
- * Uses a debounced slider to reduce API calls and provides contextual feedback summary.
+ * @file MediaResultList.tsx
+ * @description A component that displays a list of media items in a grid format.
  *
  * @component
  * @example
- * <MediaFilter
- *   selectedTypes={["image", "video"]}
- *   selectedYears={[2000, 2023]}
- *   onChange={(filters) => { ... }}
+ * <MediaResultList
+ *   items={mediaItems}
+ *   pageSize={12}
  * />
  *
  * @remarks
- * - Designed for the search page to interactively narrow down results.
- * - Ensures at least one media type is always selected.
- * - Debounced slider ensures smoother UX and fewer re-renders.
+ * - Uses Material-UI's Grid component for layout.
+ * - Each media item is rendered as a MediaCard component.
+ * - Supports infinite scrolling by observing the last item in the list.
+ * - Integrates with a custom hook for managing favourites.
+ * - Uses callbacks to handle favourite toggling and check if an item is favourited.
  */
 
 import { useCallback } from "react";

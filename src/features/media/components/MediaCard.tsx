@@ -82,6 +82,7 @@ const MediaCard = memo(
             opacity: 1,
           },
         }}
+        data-testid="media-card"
       >
         {!imageLoaded && (
           <Box
@@ -183,9 +184,15 @@ const MediaCard = memo(
             }}
           >
             {item.mediaType === "video" ? (
-              <PlayCircleOutlineIcon sx={{ fontSize: 32, color: "white" }} />
+              <PlayCircleOutlineIcon
+                sx={{ fontSize: 32, color: "white" }}
+                data-testid="PlayCircleOutlineIcon"
+              />
             ) : (
-              <MicIcon sx={{ fontSize: 24, color: "white" }} />
+              <MicIcon
+                sx={{ fontSize: 24, color: "white" }}
+                data-testid="MicIcon"
+              />
             )}
           </Box>
         )}
@@ -203,8 +210,15 @@ const MediaCard = memo(
             transition: "opacity 0.2s ease",
             opacity: isFavourited ? 0.8 : 0,
           }}
+          data-testid="favourite-button"
+          aria-label="favourite"
+          aria-pressed={isFavourited}
         >
-          {isFavourited ? <FavoriteIcon /> : <FavoriteBorderIcon />}
+          {isFavourited ? (
+            <FavoriteIcon data-testid="FavoriteIcon" />
+          ) : (
+            <FavoriteBorderIcon />
+          )}
         </IconButton>
       </Card>
     );

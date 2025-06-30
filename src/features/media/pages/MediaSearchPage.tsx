@@ -189,7 +189,7 @@ const MediaSearchPage = () => {
             />
           ) : (
             <Typography variant="body2" color="text.secondary">
-              Showing <strong> {items.length} </strong> of{" "}
+              Showing <strong>{items.length}</strong> of{" "}
               <strong>{totalResults}</strong> results for
               {filterSummary}.
             </Typography>

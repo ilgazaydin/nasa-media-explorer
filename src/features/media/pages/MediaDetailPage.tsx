@@ -63,8 +63,6 @@ const MediaDetailPage = () => {
   const audioAsset = assets?.find((a) => a.extension === "mp3");
   const [isImageLoaded, setIsImageLoaded] = useState(false);
 
-  console.log("audioAsset :>> ", assets);
-
   if (!id) {
     return (
       <Container maxWidth="md" sx={{ py: 4 }}>

@@ -27,7 +27,8 @@ import { useDebounce } from "@/hooks/useDebounce";
 export const useSearch = () => {
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const initialSearch = searchParams.get("q") || "";
+  const DEFAULT_QUERY = "supernova";
+  const initialSearch = searchParams.get("q") || DEFAULT_QUERY;
   const [searchInput, setSearchInput] = useState(initialSearch);
   const debouncedQuery = useDebounce(searchInput.trim(), 600);
 

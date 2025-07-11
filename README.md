@@ -150,10 +150,7 @@ src/
 
 ## Future Improvements
 
-- Add more tests across all components and hooks
-- Full user registration and authentication with protected routes
-- Improve default search result aesthetics  
-  Currently, NASA’s API returns **audio files first** in default searches, which makes the initial results grid feel visually unbalanced. I chose not to filter them out by default to keep things honest to the API — but it could be worth exploring **a smarter or more visually appealing default view**, such as showing a curated welcome/search prompt before initial results.
+- Add end-to-end tests with Playwright
 
 ---
 

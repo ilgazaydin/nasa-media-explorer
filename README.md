@@ -38,6 +38,7 @@ A modern, fully responsive React application for searching and exploring media f
 | Vite              | Build tool              |
 | localStorage      | Favourites persistence  |
 | Vitest & RTL      | Unit testing            |
+| Storybook         | Component documentation |
 ---
 
 ## Setup Instructions
@@ -50,11 +51,32 @@ cd nasa-media-explorer
 # 2. Install dependencies
 npm install
 
-# 3. Run the app
+# 3. Run the app (environment already configured!)
 npm run dev
 ```
 
 > 💡 Make sure you have Node.js v18+ installed.
+
+### Environment Configuration
+
+The app comes with development-friendly defaults in `.env`. You can customize these by creating a `.env.local` file:
+
+```bash
+# Enable mock authentication (bypass login for development)  
+VITE_MOCK_AUTH=true
+
+# API base URL for authentication
+VITE_API_BASE_URL=http://localhost:4000/api
+
+### Mock Authentication
+
+For development and testing, you can bypass the authentication system:
+
+1. **Default Enabled**: Mock auth is enabled by default in development
+2. **UI Toggle**: Use the floating dev tools button (bottom-right corner)
+3. **Environment Override**: Set `VITE_MOCK_AUTH=false` in `.env.local` to disable
+
+When enabled, you'll be automatically logged in as a mock user without needing to hit any authentication APIs.
 
 ---
 

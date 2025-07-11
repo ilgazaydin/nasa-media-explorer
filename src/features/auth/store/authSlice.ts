@@ -27,6 +27,7 @@ import {
   me as getMe,
   verifyEmail as verifyEmailApi,
 } from "../api/authApi";
+import { config, mockUser, mockTokens } from "@/config";
 
 export interface User {
   id: string;
@@ -45,10 +46,14 @@ interface AuthState {
 }
 
 const initialState: AuthState = {
-  accessToken: localStorage.getItem("access_token"),
-  refreshToken: localStorage.getItem("refresh_token"),
-  user: null,
-  loading: true,
+  accessToken: config.mockAuth
+    ? mockTokens.accessToken
+    : localStorage.getItem("access_token"),
+  refreshToken: config.mockAuth
+    ? mockTokens.refreshToken
+    : localStorage.getItem("refresh_token"),
+  user: config.mockAuth ? mockUser : null,
+  loading: !config.mockAuth,
 };
 
 // 🔐 Thunks
@@ -59,6 +64,10 @@ export const login = createAsyncThunk<
   { rejectValue: string }
 >("auth/login", async ({ email, password }, { rejectWithValue }) => {
   try {
+    if (config.mockAuth) {
+      return mockTokens;
+    }
+
     const res = await loginApi({ email, password });
     localStorage.setItem("access_token", res.accessToken);
     localStorage.setItem("refresh_token", res.refreshToken);
@@ -79,6 +88,10 @@ export const register = createAsyncThunk<
   "auth/register",
   async ({ email, password, firstName, lastName }, { rejectWithValue }) => {
     try {
+      if (config.mockAuth) {
+        return mockTokens;
+      }
+
       const res = await registerApi({ email, password, firstName, lastName });
       localStorage.setItem("access_token", res.accessToken);
       localStorage.setItem("refresh_token", res.refreshToken);
@@ -106,10 +119,13 @@ export const verifyEmail = createAsyncThunk<
   }
 });
 
-export const fetchMe = createAsyncThunk(
-  "auth/fetchMe",
-  async () => await getMe()
-);
+export const fetchMe = createAsyncThunk("auth/fetchMe", async () => {
+  if (config.mockAuth) {
+    return mockUser;
+  }
+
+  return await getMe();
+});
 
 const authSlice = createSlice({
   name: "auth",
@@ -125,8 +141,25 @@ const authSlice = createSlice({
       state.accessToken = null;
       state.refreshToken = null;
       state.user = null;
-      localStorage.removeItem("access_token");
-      localStorage.removeItem("refresh_token");
+
+      if (!config.mockAuth) {
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("refresh_token");
+      }
+    },
+
+    enableMockAuth: (state) => {
+      state.accessToken = mockTokens.accessToken;
+      state.refreshToken = mockTokens.refreshToken;
+      state.user = mockUser;
+      state.loading = false;
+    },
+
+    disableMockAuth: (state) => {
+      state.accessToken = localStorage.getItem("access_token");
+      state.refreshToken = localStorage.getItem("refresh_token");
+      state.user = null;
+      state.loading = !!state.accessToken; // loading if we have a token but no user
     },
   },
   extraReducers: (builder) => {
@@ -152,5 +185,5 @@ const authSlice = createSlice({
   },
 });
 
-export const { logout } = authSlice.actions;
+export const { logout, enableMockAuth, disableMockAuth } = authSlice.actions;
 export default authSlice.reducer;

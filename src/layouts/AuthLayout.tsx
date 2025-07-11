@@ -22,12 +22,17 @@ import { useAppSelector, useAppDispatch } from "@/app/hooks";
 import { fetchMe } from "@/features/auth/store/authSlice";
 import AppHeader from "@/components/layout/AppHeader";
 import { Box, CircularProgress } from "@mui/material";
+import { config } from "@/config";
 
 const AuthLayout = () => {
   const dispatch = useAppDispatch();
   const { accessToken, user, loading } = useAppSelector((state) => state.auth);
 
   useEffect(() => {
+    if (config.mockAuth) {
+      return;
+    }
+
     if (accessToken && !user) {
       dispatch(fetchMe());
     }

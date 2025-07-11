@@ -14,6 +14,7 @@ import { BrowserRouter } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import CssBaseline from "@mui/material/CssBaseline";
 import AppRoutes from "@/routes/AppRoutes";
+import MockAuthToggle from "@/components/dev/MockAuthToggle";
 
 const queryClient = new QueryClient();
 const App = () => {
@@ -22,6 +23,7 @@ const App = () => {
       <CssBaseline />
       <BrowserRouter>
         <AppRoutes />
+        <MockAuthToggle />
       </BrowserRouter>
     </QueryClientProvider>
   );

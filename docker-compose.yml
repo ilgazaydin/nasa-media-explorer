@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  # Development environment
+  nasa-media-explorer-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    ports:
+      - "8000:8000"
+    volumes:
+      # Mount source code for hot reload
+      - ./src:/app/src
+      - ./public:/app/public
+      - /app/node_modules  # Prevent overwriting node_modules
+    env_file:
+      - .env.development
+    profiles:
+      - dev
+    restart: unless-stopped
+
+  # Production environment (for local testing)
+  nasa-media-explorer-prod:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env.production
+    profiles:
+      - prod
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s

@@ -1,6 +1,9 @@
 # NASA Media Explorer - Multi-stage Docker Build
 # Stage 1: Build the application
-FROM node:18-alpine AS builder
+FROM node:20-alpine AS builder
+
+# Accept build argument for environment
+ARG NODE_ENV=production
 
 # Set working directory
 WORKDIR /app
@@ -14,8 +17,8 @@ RUN npm ci && npm cache clean --force
 # Copy source code
 COPY . .
 
-# Build the application
-RUN npm run build
+# Build the application based on environment
+RUN if [ "$NODE_ENV" = "development" ]; then npm run build:dev; else npm run build; fi
 
 # Stage 2: Production image with nginx
 FROM nginx:alpine AS production

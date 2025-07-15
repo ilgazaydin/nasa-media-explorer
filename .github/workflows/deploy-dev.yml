@@ -73,8 +73,9 @@ jobs:
 
       - name: Build development Docker image
         run: |
-          # Use development Dockerfile
-          docker build -f Dockerfile.dev -t ${{ env.REGISTRY }}/${{ env.PROJECT_ID }}/${{ env.REPOSITORY_NAME }}/frontend:${{ github.sha }} .
+          # Use production Dockerfile but build with development environment
+          docker build -t ${{ env.REGISTRY }}/${{ env.PROJECT_ID }}/${{ env.REPOSITORY_NAME }}/frontend:${{ github.sha }} \
+            --build-arg NODE_ENV=development .
           docker tag ${{ env.REGISTRY }}/${{ env.PROJECT_ID }}/${{ env.REPOSITORY_NAME }}/frontend:${{ github.sha }} \
                      ${{ env.REGISTRY }}/${{ env.PROJECT_ID }}/${{ env.REPOSITORY_NAME }}/frontend:dev-latest
 
@@ -94,7 +95,7 @@ jobs:
             --cpu 1 \
             --min-instances 0 \
             --max-instances 5 \
-            --port 8000 \
+            --port 8080 \
             --timeout 300 \
             --service-account=${{ env.SERVICE_ACCOUNT }}
 

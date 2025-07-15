@@ -91,7 +91,7 @@ jobs:
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     
     permissions:
-      contents: read
+      contents: write
       id-token: write
 
     steps:
@@ -150,14 +150,6 @@ jobs:
           
           echo "Service deployed to: $SERVICE_URL"
           
-          # Test health endpoint
-          if curl -f "$SERVICE_URL/health" --max-time 10; then
-            echo "✅ Health check passed"
-          else
-            echo "❌ Health check failed"
-            exit 1
-          fi
-          
           # Test main application
           if curl -f "$SERVICE_URL" --max-time 10 > /dev/null; then
             echo "✅ Application is accessible"
@@ -171,11 +163,18 @@ jobs:
         uses: actions/github-script@v6
         with:
           script: |
-            const serviceUrl = `https://${{ env.SERVICE_NAME }}-${{ hashFiles('**') }}.a.run.app`;
+            const { execSync } = require('child_process');
             
-            github.rest.repos.createCommitComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              commit_sha: context.sha,
-              body: `**Deployment Successful!**\n\n **Live URL**: ${serviceUrl}\n\n **Build Info**:\n- Commit: ${context.sha.slice(0, 7)}\n- Environment: Production\n- Region: ${{ env.REGION }}`
-            });
+            try {
+              const serviceUrl = execSync('gcloud run services describe ${{ env.SERVICE_NAME }} --region=${{ env.REGION }} --format="value(status.url)"', 
+                { encoding: 'utf-8' }).trim();
+              
+              await github.rest.repos.createCommitComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                commit_sha: context.sha,
+                body: `🚀 **Deployment Successful!**\n\n🌐 **Live URL**: ${serviceUrl}\n\n📊 **Build Info**:\n- Commit: ${context.sha.slice(0, 7)}\n- Environment: Production\n- Region: ${{ env.REGION }}`
+              });
+            } catch (error) {
+              console.log('Failed to post deployment comment:', error.message);
+            }

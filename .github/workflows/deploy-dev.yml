@@ -11,6 +11,7 @@ on:
 env:
   PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
   SERVICE_NAME: nasa-media-explorer-dev
+  REPOSITORY_NAME: nasa-media-explorer
   REGION: europe-west2
   REGISTRY: europe-west2-docker.pkg.dev
   SERVICE_ACCOUNT: nasa-media-explorer@nasa-media-explorer.iam.gserviceaccount.com
@@ -73,19 +74,19 @@ jobs:
       - name: Build development Docker image
         run: |
           # Use development Dockerfile
-          docker build -f Dockerfile.dev -t ${{ env.REGISTRY }}/${{ env.PROJECT_ID }}/${{ env.SERVICE_NAME }}/frontend:${{ github.sha }} .
-          docker tag ${{ env.REGISTRY }}/${{ env.PROJECT_ID }}/${{ env.SERVICE_NAME }}/frontend:${{ github.sha }} \
-                     ${{ env.REGISTRY }}/${{ env.PROJECT_ID }}/${{ env.SERVICE_NAME }}/frontend:dev-latest
+          docker build -f Dockerfile.dev -t ${{ env.REGISTRY }}/${{ env.PROJECT_ID }}/${{ env.REPOSITORY_NAME }}/frontend:${{ github.sha }} .
+          docker tag ${{ env.REGISTRY }}/${{ env.PROJECT_ID }}/${{ env.REPOSITORY_NAME }}/frontend:${{ github.sha }} \
+                     ${{ env.REGISTRY }}/${{ env.PROJECT_ID }}/${{ env.REPOSITORY_NAME }}/frontend:dev-latest
 
       - name: Push development Docker image
         run: |
-          docker push ${{ env.REGISTRY }}/${{ env.PROJECT_ID }}/${{ env.SERVICE_NAME }}/frontend:${{ github.sha }}
-          docker push ${{ env.REGISTRY }}/${{ env.PROJECT_ID }}/${{ env.SERVICE_NAME }}/frontend:dev-latest
+          docker push ${{ env.REGISTRY }}/${{ env.PROJECT_ID }}/${{ env.REPOSITORY_NAME }}/frontend:${{ github.sha }}
+          docker push ${{ env.REGISTRY }}/${{ env.PROJECT_ID }}/${{ env.REPOSITORY_NAME }}/frontend:dev-latest
 
       - name: Deploy to Cloud Run Development
         run: |
           gcloud run deploy ${{ env.SERVICE_NAME }} \
-            --image ${{ env.REGISTRY }}/${{ env.PROJECT_ID }}/${{ env.SERVICE_NAME }}/frontend:${{ github.sha }} \
+            --image ${{ env.REGISTRY }}/${{ env.PROJECT_ID }}/${{ env.REPOSITORY_NAME }}/frontend:${{ github.sha }} \
             --platform managed \
             --region ${{ env.REGION }} \
             --allow-unauthenticated \
